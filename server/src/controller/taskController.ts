@@ -1,6 +1,8 @@
 import { Request,Response } from "express";
 import { prisma } from "../lib/prisma";
-
+//create task
+//get tasks by user
+//update task
 export const createTask = async (req: Request, res: Response) => {
     try{
         const { title, description , userId } = req.body;
@@ -8,7 +10,7 @@ export const createTask = async (req: Request, res: Response) => {
             data:{
                 title,
                 description,
-                userId
+                userId: Number(userId)
             }
         })
         res.status(201).json(newTask);
@@ -16,16 +18,36 @@ export const createTask = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Failed to create task" });
     }
 }
-export const getTask = async (req:Request,res:Response)=>{
+export const getTasksbyuser = async (req:Request,res:Response)=>{
+    try{
+        const {userId} = req.params;
+        const tasks = await prisma.task.findMany({
+            where:{userId:Number(userId)}
+        })
+        if(!tasks){
+            return res.status(404).json({ message: "No tasks found for this user" });
+        }
+        res.status(200).json(tasks);
+    }catch(error){
+        res.status(500).json({ error: "Failed to retrieve tasks" });
+    }
+}
+export const updateTask = async (req:Request,res:Response)=>{
     try{
         const {id} = req.params;
-        const task = await prisma.task.findUnique({
-            where:{id:Number(id)}
-        })
-        if(!task){
-            return res.status(404).json({mssg:"Task not found"})
-        }
-    } catch (error) {
-        res.status(500).json({ error: "Failed to retrieve task" });
+        const {title,description,completed} = req.body;
+        const updatedTask = await prisma.task.update({
+            where:{id:Number(id)},
+            data:{
+                title,
+                description,
+                completed
+            }
+        });
+        res.status(200).json(updatedTask);
+    }catch(error){
+        res.status(500).json({ error: "server error",
+            details: error
+         });
     }
 }

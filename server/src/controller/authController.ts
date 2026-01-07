@@ -4,6 +4,14 @@ import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
 import { tokenGen } from "../utils/generateToken";
 
+interface AuthReq extends Request{
+  user?:{
+    id: string,
+    name: string,
+    email: string,
+  }
+}
+
 export const signup = async (req: Request, res: Response) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
@@ -83,3 +91,32 @@ export const login = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const getCurrentUser = (req:AuthReq,res:Response) =>{
+  const user = req.user;
+
+  if (!user){
+      return res.status(401).json({mssg:"not authenticated!!"})
+  }
+
+  return res.status(200).json({
+    user:{
+      id: user.id,
+      name: user.name,
+    }
+  })
+}
+
+export const logout = async(req:Request,res:Response ) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+    });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ mssg: "internal server issue" });
+  }
+}

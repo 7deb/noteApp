@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
-const JWT_SECRET = process.env.secret || "secret";
+import { JWT_SECRET } from "../config/password";
 
 interface JwtPayload {
   userId: number;

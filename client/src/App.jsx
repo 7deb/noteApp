@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import './App.css'
+import './App.css';
 import SignupPage from './pages/SignupPage';
-import Loginpage from './pages/Loginpage';
+import LoginPage from './pages/Loginpage';
 import Home from './pages/Home';
 import { useAuthStore } from './store/useAuthstore';
 import { Route, Routes, Navigate } from 'react-router-dom';
@@ -11,10 +11,10 @@ function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
-    checkAuth();
-  }, [])
+    checkAuth();  // Ensure authentication status is checked on page load
+  }, []);
 
-  // if (isCheckingAuth) return <div>...loading</div>
+  // if (isCheckingAuth) return <div>Loading...</div>;  
 
   return (
     <>
@@ -33,21 +33,18 @@ function App() {
         {authUser ? (
           <>
             <Route path="/" element={<Home />} />
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="*" element={<Navigate to="/" />} /> 
           </>
         ) : (
           <>
-            {/* ADD THE LOGINPAGE ROUTE HERE */}
-            <Route path="/login" element={<Loginpage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-
-            {/* Redirect any other path (like '/') to /login */}
             <Route path="*" element={<Navigate to="/login" />} />
           </>
         )}
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

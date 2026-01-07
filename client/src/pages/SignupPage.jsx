@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/useAuthstore';
-import { User, Eye, EyeOff } from "lucide-react"
+import { User, Eye, EyeOff } from "lucide-react";
 import toast from 'react-hot-toast';
-import { Navigate, useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const SignupPage = () => {
-    const [showPassword, setshowPassword] = useState(false);
-    const [showConfirmpassword, setshowConfirmpassword] = useState(false);
-    const [FormData, setFormData] = useState({
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmpassword, setShowConfirmpassword] = useState(false);
+    const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: "",
@@ -28,93 +28,111 @@ const SignupPage = () => {
         checkUserAuth();
     }, [checkAuth, authUser, navigate]);  
 
-    const handlesubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (FormData.password.length < 6) {
+        if (formData.password.length < 6) {
             toast.error("Password must be at least 6 characters long");
             return;
         }
 
-        if (FormData.password !== FormData.confirmPassword) {
+        if (formData.password !== formData.confirmPassword) {
             toast.error("Passwords do not match");
             return;
         }
 
-        if (!FormData.name) {
+        if (!formData.name) {
             toast.error("Username is required!");
             return;
         }
 
-        await signup(FormData);
+        await signup(formData);
         navigate("/");
     };
 
     return (
-        <div className='flex flex-col items-center justify-center min-w-96 mx-auto'>
-            <div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
-                <form onSubmit={handlesubmit} className="skeleton space-y-6 p-4 rounded-lg shadow-md max-w-md">
-                    {/* username */}
+        <div className="flex items-center justify-center min-h-screen bg-base-200">
+            <div className="w-full max-w-md p-6 rounded-lg shadow-xl bg-base-100">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Username */}
                     <div>
-                        <label><span>Username</span></label>
-                        <User />
+                        <label className="block text-sm font-medium text-gray-1000">Username</label>
+                        <div className="flex items-center border rounded-md p-2">
+                            <User size={20} className="mr-2" />
+                            <input
+                                type="text"
+                                placeholder="John Doe"
+                                className="input input-bordered w-full"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-1000">Email</label>
                         <input
-                            type='text'
-                            placeholder='John Doe'
-                            className='w-full input input-bordered  h-10'
-                            value={FormData.name}
-                            onChange={(e) => setFormData({ ...FormData, name: e.target.value })}
+                            type="email"
+                            placeholder="JohnDoe@google.com"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            className="input input-bordered w-full"
                         />
                     </div>
 
-                    {/* email */}
+                    {/* Password */}
                     <div>
-                        <label><span>Email</span></label>
-                        <input
-                            type='text'
-                            placeholder='JohnDoe@google.com'
-                            value={FormData.email}
-                            onChange={(e) => setFormData({ ...FormData, email: e.target.value })}
-                        />
+                        <label className="block text-sm font-medium text-gray-1000">Password</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="••••••••"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                className="input input-bordered w-full pr-10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(prev => !prev)}
+                                className="absolute inset-y-0 right-2 flex items-center justify-center"
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                     </div>
 
-                    {/* password */}
+                    {/* Confirm Password */}
                     <div>
-                        <label><span>Password</span></label>
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="••••••••"
-                            value={FormData.password}
-                            onChange={(e) => setFormData({ ...FormData, password: e.target.value })}
-                        />
-                        <button
-                            type='button'
-                            onClick={() => setshowPassword((prev) => !prev)}
-                        >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
+                        <label className="block text-sm font-medium text-gray-1000">Confirm Password</label>
+                        <div className="relative">
+                            <input
+                                type={showConfirmpassword ? "text" : "password"}
+                                placeholder="••••••••"
+                                value={formData.confirmPassword}
+                                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                className="input input-bordered w-full pr-10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmpassword(prev => !prev)}
+                                className="absolute inset-y-0 right-2 flex items-center justify-center"
+                            >
+                                {showConfirmpassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                     </div>
 
-                    {/* confirmedPassword */}
-                    <div>
-                        <label><span>Confirm Password</span></label>
-                        <input
-                            type={showConfirmpassword ? "text" : "password"}
-                            placeholder="••••••••"
-                            value={FormData.confirmPassword}
-                            onChange={(e) => setFormData({ ...FormData, confirmPassword: e.target.value })}
-                        />
-                        <button
-                            type='button'
-                            onClick={() => setshowConfirmpassword((prev) => !prev)}
-                        >
-                            {showConfirmpassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                    </div>
-
-                    <button type='submit' disabled={isSigningup}>
+                    {/* Submit Button */}
+                    <button 
+                        type="submit" 
+                        disabled={isSigningup} 
+                        className={`btn btn-primary w-full ${isSigningup ? 'loading' : ''}`}
+                    >
                         {isSigningup ? "Creating..." : "Sign Up"}
                     </button>
+
+                    {/* Login Link */}
                     <p className="text-sm text-center mt-4 text-yellow-400">
                         Already have an account?{" "}
                         <Link to="/login" className="text-primary font-medium hover:underline">Log in</Link>

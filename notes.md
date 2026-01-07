@@ -25,3 +25,21 @@ step2 - npx prisma init
 dev dependencies
 ├──  bcrypt 
 └──  jsonwebtoken
+
+
+
+#to create react app using vite 
+**the function name should be in upperCase** the file name can be in smallCase **but best practise is to keep both filename and function name in capital**
+u do 
+├──npm create vite@latest folderName 
+├──then follow instructions 
+├──then npm install 
+└── npm run dev 
+
+to install tailwind css
+├──npm install tailwindcss @tailwindcss/vite
+go to tailwindcss.com for further details 
+//first make login and signup pages
+
+
+#https://ui.shadcn.com/docs/components/calendar -> calender ui 
