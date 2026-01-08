@@ -1,9 +1,11 @@
 import express from 'express';
-import { createTask, getTasksbyuser, updateTask } from '../controller/taskController';
+import { createTask, getTasks, updateTask } from '../controller/taskController';
+import { verifyToken } from '../middleware/middleware';
 
 const router = express.Router();
 
 router.post('/',createTask);
-router.get('/user/:userId',getTasksbyuser);
-router.put('/:id',updateTask);
+router.get('/me',verifyToken,getTasks);
+router.put('/updateTask',updateTask);
+
 export default router;

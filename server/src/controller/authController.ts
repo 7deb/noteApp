@@ -4,12 +4,12 @@ import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
 import { tokenGen } from "../utils/generateToken";
 
-interface AuthReq extends Request{
-  user?:{
-    id: string,
-    name: string,
-    email: string,
-  }
+interface AuthReq extends Request {
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
 }
 
 export const signup = async (req: Request, res: Response) => {
@@ -17,9 +17,19 @@ export const signup = async (req: Request, res: Response) => {
     const { name, email, password, confirmPassword } = req.body;
 
     // Correcting validation check
-    const validationResult = signupSchema.safeParse({ name, email, password, confirmPassword });
+    const validationResult = signupSchema.safeParse({
+      name,
+      email,
+      password,
+      confirmPassword,
+    });
     if (!validationResult.success) {
-      return res.status(401).json({ mssg: "not valid inputs", errors: validationResult.error.issues });
+      return res
+        .status(401)
+        .json({
+          mssg: "not valid inputs",
+          errors: validationResult.error.issues,
+        });
     }
 
     if (password !== confirmPassword) {
@@ -41,7 +51,7 @@ export const signup = async (req: Request, res: Response) => {
       },
     });
 
-    //token generator 
+    //token generator
     tokenGen(newUser.id.toString(), res);
 
     return res.status(201).json({
@@ -61,7 +71,12 @@ export const login = async (req: Request, res: Response) => {
     // Correcting validation check
     const validationResult = loginSchema.safeParse({ email, password });
     if (!validationResult.success) {
-      return res.status(401).json({ mssg: "invalid inputs", errors: validationResult.error.issues });
+      return res
+        .status(401)
+        .json({
+          mssg: "invalid inputs",
+          errors: validationResult.error.issues,
+        });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -92,22 +107,25 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const getCurrentUser = (req:AuthReq,res:Response) =>{
+export const getCurrentUser = (req: AuthReq, res: Response) => {
   const user = req.user;
+  if (user) {
 
-  if (!user){
-      return res.status(401).json({mssg:"not authenticated!!"})
+    tokenGen(user.id.toString(), res);
+  }
+  if (!user) {
+    return res.status(401).json({ mssg: "not authenticated!!" });
   }
 
   return res.status(200).json({
-    user:{
+    user: {
       id: user.id,
       name: user.name,
-    }
-  })
-}
+    },
+  });
+};
 
-export const logout = async(req:Request,res:Response ) => {
+export const logout = async (req: Request, res: Response) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
@@ -119,4 +137,4 @@ export const logout = async(req:Request,res:Response ) => {
     console.log(error);
     res.status(500).json({ mssg: "internal server issue" });
   }
-}
+};

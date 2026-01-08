@@ -1,37 +1,45 @@
-// import { axiosInstance } from "../lib/axios";
-// import toast from "react-hot-toast";
+import { create } from 'zustand';
+import { axiosInstance } from '../lib/axios';
 
-// import { create } from "zustand";
-// export const useTaskStore = create((set, get) => ({
-//     tasks : [],
-//     isAddingTask: false,
-//     isFetchingTasks: false,
+export const useTaskStore = create((set) => ({
+  tasks: [],
+  isFetchingTasks: false,
+  isAddingTask: false,
 
-//     addTask: async (task) => {
-//         try {
-//             set({ isAddingTask: true });
-//             const res = await axiosInstance.post("/api/task", { task });
-//             console.log("response from backend:", res.data);
-//             set((state) => ({ tasks: [...state.tasks, res.data.task] }));
-//         } catch (error) {
-//             console.error("error adding task", error);
-//             toast.error("Could not add task");
-//         } finally {
-//             set({ isAddingTask: false });
-//         }
-//     },
+  fetchTasks: async () => {
+    try {
+      set({ isFetchingTasks: true });
+      const res = await axiosInstance.get('/task/me');
+      set({ tasks: res.data });
+    } catch (err) {
+      console.error('Fetch tasks failed', err);
+    } finally {
+      set({ isFetchingTasks: false });
+    }
+  },
+  // addTask: async (title) => {
+  //   if (!title.trim()) return;
 
-//     fetchTasks: async () => {
-//         try {
-//             set({ isFetchingTasks: true });
-//             const res = await axiosInstance.get("/tasks");
-//             console.log("fetched tasks from backend:", res.data);
-//             set({ tasks: res.data.tasks });
-//         }   catch (error) {
-//             console.error("error fetchining tasks",error);
-//             toast.error("could not fetch tasks")
-//         }finally{
-//             set({isFetchingTasks:false});
-//         }
-//     }
-// }));
+  //   try {
+  //     set({ isAddingTask: true });
+
+  //     // 🔥 when backend POST exists, uncomment this
+  //     // const res = await axiosInstance.post('/task', { title });
+
+  //     set((state) => ({
+  //       tasks: [
+  //         ...state.tasks,
+  //         {
+  //           id: Date.now(), // temp id
+  //           title,
+  //           completed: false,
+  //         },
+  //       ],
+  //     }));
+  //   } catch (err) {
+  //     console.error('Add task failed', err);
+  //   } finally {
+  //     set({ isAddingTask: false });
+  //   }
+  // },
+}));

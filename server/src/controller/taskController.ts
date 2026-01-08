@@ -1,8 +1,6 @@
 import { Request,Response } from "express";
 import { prisma } from "../lib/prisma";
-//create task
-//get tasks by user
-//update task
+ 
 export const createTask = async (req: Request, res: Response) => {
     try{
         const { title, description , userId } = req.body;
@@ -18,15 +16,12 @@ export const createTask = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Failed to create task" });
     }
 }
-export const getTasksbyuser = async (req:Request,res:Response)=>{
+export const getTasks = async (req:Request,res:Response)=>{
     try{
-        const {userId} = req.params;
+        const userId  = (req as any).userId;
         const tasks = await prisma.task.findMany({
-            where:{userId:Number(userId)}
+            where:{userId}
         })
-        if(!tasks){
-            return res.status(404).json({ message: "No tasks found for this user" });
-        }
         res.status(200).json(tasks);
     }catch(error){
         res.status(500).json({ error: "Failed to retrieve tasks" });
