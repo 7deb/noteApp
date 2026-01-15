@@ -54,7 +54,7 @@ export const Calendar = ({ value, onClick }) => {
               disabled={!day}
               onClick={() => day && onClick(new Date(year, month, day))}
               className={`aspect-square rounded-lg text-sm transition
-                ${!day ? 'cursor-default' : 'hover:bg-blue-100'}
+                ${!day ? 'cursor-default' : 'hover:bg-green-100'}
                 ${isToday ? 'bg-blue-500 text-white' : ''}
               `}
             >

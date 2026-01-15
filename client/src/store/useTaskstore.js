@@ -17,29 +17,38 @@ export const useTaskStore = create((set) => ({
       set({ isFetchingTasks: false });
     }
   },
-  // addTask: async (title) => {
-  //   if (!title.trim()) return;
 
-  //   try {
-  //     set({ isAddingTask: true });
+  addTask: async (title) => {
+  if (!title.trim()) return;
 
-  //     // 🔥 when backend POST exists, uncomment this
-  //     // const res = await axiosInstance.post('/task', { title });
+  try {
+    set({ isAddingTask: true });
 
-  //     set((state) => ({
-  //       tasks: [
-  //         ...state.tasks,
-  //         {
-  //           id: Date.now(), // temp id
-  //           title,
-  //           completed: false,
-  //         },
-  //       ],
-  //     }));
-  //   } catch (err) {
-  //     console.error('Add task failed', err);
-  //   } finally {
-  //     set({ isAddingTask: false });
-  //   }
-  // },
+    const res = await axiosInstance.post('/task', {
+      title,
+      description: '',
+    });
+
+    set((state) => ({
+      tasks: [res.data, ...state.tasks],
+    }));
+  } catch (err) {
+    console.error('Add task failed', err);
+  } finally {
+    set({ isAddingTask: false });
+  }
+},
+
+
+  removeTask: async (id) => {
+    try {
+      await axiosInstance.delete(`/task/${id}`);
+
+      set((state) => ({
+        tasks: state.tasks.filter((task) => task.id !== id),
+      }));
+    } catch (err) {
+      console.error('Delete task failed', err);
+    }
+  },
 }));
